@@ -1,0 +1,62 @@
+import turtle
+import random
+import time
+
+def draw_star(t, x, y, color):
+    """Draws a starburst effect at the given position."""
+    t.penup()
+    t.goto(x, y)
+    t.pendown()
+    t.color(color)
+    t.speed(0)
+    for _ in range(36):
+        t.forward(50)
+        t.backward(50)
+        t.right(10)
+
+def write_letter(t, x, y, letter, color):
+    """Writes a letter at the given position."""
+    t.penup()
+    t.goto(x, y)
+    t.pendown()
+    t.color(color)
+    t.write(letter, align="center", font=("Arial", 40, "bold"))
+
+def firework_explosion(t, x, y, letter, color):
+    """Creates a firework explosion effect with a letter."""
+    write_letter(t, x, y, letter, color)
+    time.sleep(0.5)
+    draw_star(t, x, y, color)
+    time.sleep(0.5)
+    t.clear()
+
+def main():
+    screen = turtle.Screen()
+    screen.bgcolor("black")
+    screen.title("Dramatic Love Fireworks")
+
+    t = turtle.Turtle()
+    t.hideturtle()
+
+    letters = ["I", "L", "O", "V", "E", "Y", "O", "U"]
+    colors = ["red", "pink", "yellow", "blue", "green", "purple", "orange"]
+    positions = [
+        (-300, 100), (-200, 100), (-100, 100), (0, 100), (100, 100), 
+        (-100, -100), (0, -100), (100, -100),
+    ]
+
+    for i in range(len(letters)):
+        x, y = positions[i]
+        color = random.choice(colors)
+        firework_explosion(t, x, y, letters[i], color)
+
+    # Write final "I LOVE YOU" on the screen
+    t.color("white")
+    t.penup()
+    t.goto(0, 0)
+    t.write("I LOVE YOU", align="center", font=("Arial", 50, "bold"))
+
+    screen.mainloop()
+
+if __name__ == "__main__":
+    main()
