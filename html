@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Fireworks</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+        }
+        canvas {
+            display: block;
+        }
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="message">I LOVE YOU</div>
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 3 + 1;
+                this.vx = Math.random() * 4 - 2;
+                this.vy = Math.random() * 4 - 2;
+                this.alpha = 1;
+            }
+
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 0.02;
+            }
+        }
+
+        class Firework {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.particles = [];
+                for (let i = 0; i < 100; i++) {
+                    this.particles.push(new Particle(x, y, color));
+                }
+            }
+
+            draw() {
+                this.particles.forEach((particle) => particle.draw());
+            }
+
+            update() {
+                this.particles.forEach((particle, index) => {
+                    if (particle.alpha <= 0) this.particles.splice(index, 1);
+                    else particle.update();
+                });
+            }
+        }
+
+        const colors = ['#FF5733', '#FFC300', '#DAF7A6', '#C70039', '#900C3F', '#581845'];
+        const messages = ['I', 'L', 'O', 'V', 'E', 'Y', 'O', 'U'];
+        let fireworks = [];
+        let messageIndex = 0;
+
+        function createFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height / 2;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            fireworks.push(new Firework(x, y, color));
+
+            if (messageIndex < messages.length) {
+                displayMessage(messages[messageIndex], x, y, color);
+                messageIndex++;
+            } else if (messageIndex === messages.length) {
+                showFinalMessage();
+                messageIndex++;
+            }
+        }
+
+        function displayMessage(letter, x, y, color) {
+            ctx.font = '48px Arial';
+            ctx.fillStyle = color;
+            ctx.fillText(letter, x - 20, y);
+        }
+
+        function showFinalMessage() {
+            const messageDiv = document.getElementById('message');
+            messageDiv.style.opacity = 1;
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fireworks.forEach((firework, index) => {
+                if (firework.particles.length === 0) fireworks.splice(index, 1);
+                else {
+                    firework.draw();
+                    firework.update();
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        setInterval(createFirework, 1000);
+        animate();
+    </script>
+</body>
+</html>
